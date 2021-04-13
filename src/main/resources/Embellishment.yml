@@ -1,0 +1,8 @@
+Embellishment:
+  Embellishment_1:
+    ITEM: DIAMOND_SWORD
+    Durability: 300
+    LORE:
+      - Embellishment Lore 1
+      - Embellishment Lore 2
+    Teleport: false

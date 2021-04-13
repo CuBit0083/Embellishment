@@ -1,0 +1,5 @@
+main: org.cubit.embellishment.EmbellishmentCore
+name: Embellishment
+version: 1.0-SNAPSHOT
+softdepend:
+ - CommandAnnotation
