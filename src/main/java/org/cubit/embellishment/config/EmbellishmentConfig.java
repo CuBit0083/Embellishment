@@ -1,14 +1,19 @@
 package org.cubit.embellishment.config;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.cubit.embellishment.api.IEmbellishmentType;
 import org.cubit.embellishment.embellishment.EmbellishmentManager;
 import org.cubit.embellishment.embellishment.EmbellishmentType;
 import org.cubit.embellishment.embellishment.EmbellishmentTypeManager;;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class EmbellishmentConfig {
@@ -31,14 +36,14 @@ public class EmbellishmentConfig {
                 file.createNewFile();
             }
             FileConfiguration saveFile = YamlConfiguration.loadConfiguration(file);
-            int i = 0;
-            for (String name : this.embellishmentManager.getPlayerEmbellishments().get(uuid).keySet()) {
-                saveFile.set("Data." + uuid + "." + i, this.embellishmentManager.getEmbellishment(uuid, name).getName());
-                i++;
-
+            Collection<IEmbellishmentType> types = this.embellishmentManager.getPlayerEmbellishments().get(uuid).values();
+            List<String> list = new ArrayList<>();
+            for (IEmbellishmentType iEmbellishmentType : types) {
+                list.add(iEmbellishmentType.getName());
             }
+            saveFile.set("Data." + uuid, list);
             if (this.embellishmentManager.getPlayerEmbellishmentTypeMap().containsKey(uuid)) {
-                saveFile.set("Embellishment." + uuid , this.embellishmentManager.getPlayerEmbellishmentTypeMap().get(uuid).getName());
+                saveFile.set("Embellishment." + uuid, this.embellishmentManager.getPlayerEmbellishmentTypeMap().get(uuid).getName());
             }
             saveFile.save(file);
         }
@@ -50,11 +55,13 @@ public class EmbellishmentConfig {
         if (files == null) return;
         for (File file : files) {
             FileConfiguration saveFile = YamlConfiguration.loadConfiguration(file);
-            for (String key : saveFile.getConfigurationSection("Data").getKeys(false)) {
-                for (String name : saveFile.getConfigurationSection("Data." + key).getKeys(false)) {
-                    this.embellishmentManager.addEmbellishment(UUID.fromString(key) , this.embellishmentTypeManager.getEmbellishmentType(saveFile.getString("Data." + key + "." + name)));
-                }
+            String uuid = file.getName().replace(".yml" , "");
+            List<String> list = saveFile.getConfigurationSection("Data").getStringList(uuid);
+            for (String s : list) {
+                this.embellishmentManager.addEmbellishment(UUID.fromString(uuid), this.embellishmentTypeManager.getEmbellishmentType(s));
             }
+
+
             if (saveFile.getConfigurationSection("Embellishment") != null) {
                 for (String key : saveFile.getConfigurationSection("Embellishment").getKeys(false)) {
                     this.embellishmentManager.getPlayerEmbellishmentTypeMap().put(UUID.fromString(key), this.embellishmentTypeManager.getEmbellishmentType(saveFile.getString("Embellishment." + key)));
@@ -64,6 +71,5 @@ public class EmbellishmentConfig {
             file.delete();
 
         }
-
     }
 }

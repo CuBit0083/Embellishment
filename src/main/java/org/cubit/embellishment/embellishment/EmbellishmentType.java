@@ -27,4 +27,9 @@ public class EmbellishmentType implements IEmbellishmentType  {
         this.isTeleport = isTeleport;
     }
 
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

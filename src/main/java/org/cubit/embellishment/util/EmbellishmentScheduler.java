@@ -24,14 +24,24 @@ public class EmbellishmentScheduler {
 
     public void onScheduler(Player player , String name , ArmorStand armorStand) {
         if (this.embellishmentManager.getEmbellishment(player.getUniqueId(), name).isTeleport()) {
+            if (this.scheduler.containsKey(player.getUniqueId())) {
+                Bukkit.getScheduler().cancelTask(this.scheduler.get(player.getUniqueId()));
+                this.scheduler.remove(player.getUniqueId());
+            }
             this.scheduler.put(player.getUniqueId(), Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                 armorStand.teleport(player.getEyeLocation());
             }, 0, 1));
         }else {
+            if (this.scheduler.containsKey(player.getUniqueId())) {
+                Bukkit.getScheduler().cancelTask(this.scheduler.get(player.getUniqueId()));
+                this.scheduler.remove(player.getUniqueId());
+            }
             this.scheduler.put(player.getUniqueId(), Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                 player.setPassenger(armorStand);
                 armorStand.teleport(player.getEyeLocation());
             }, 0, 1));
         }
     }
+
+
 }

@@ -46,10 +46,12 @@ public class EmbellishmentCore extends JavaPlugin {
         CommandAnnotation.init(this);
         CommandAnnotation.registerCommandObject(this.embellishmentCommand);
         try {
-            List<IEmbellishmentType> iEmbellishmentTypes = this.embellishmentTypeConfig.getEmbellishmentTypes();
-            for (IEmbellishmentType iEmbellishmentType : iEmbellishmentTypes) {
-                this.logger.log(Level.INFO, iEmbellishmentType.getName() + " , " + iEmbellishmentType.getItem() + " , " + iEmbellishmentType.getItem().getDurability() + " , " + iEmbellishmentType.getLore() + " " + iEmbellishmentType.isTeleport());
+            if (this.embellishmentTypeConfig.getEmbellishmentTypes() != null) {
+                List<IEmbellishmentType> iEmbellishmentTypes = this.embellishmentTypeConfig.getEmbellishmentTypes();
+                for (IEmbellishmentType iEmbellishmentType : iEmbellishmentTypes) {
+                    this.logger.log(Level.INFO, iEmbellishmentType.getName() + " , " + iEmbellishmentType.getItem() + " , " + iEmbellishmentType.getDurability() + " , " + iEmbellishmentType.getLore() + " " + iEmbellishmentType.isTeleport());
 
+                }
             }
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -65,5 +67,11 @@ public class EmbellishmentCore extends JavaPlugin {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+        for (UUID uuid : this.embellishmentManager.getArmorStandMap().keySet()) {
+            this.embellishmentManager.getArmorStandMap().get(uuid).remove();
+        }
+        this.embellishmentManager.getArmorStandMap().clear();
+        System.out.println("1");
     }
+
 }

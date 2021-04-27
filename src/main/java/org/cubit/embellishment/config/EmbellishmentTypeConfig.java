@@ -11,6 +11,7 @@ import org.cubit.embellishment.embellishment.EmbellishmentTypeManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class EmbellishmentTypeConfig {
 
@@ -23,20 +24,24 @@ public class EmbellishmentTypeConfig {
     }
 
     public List<IEmbellishmentType> getEmbellishmentTypes() throws Exception {
-        File file = new File(plugin.getDataFolder() , "Embellishment/Embellishment.yml");
+        File file = new File(plugin.getDataFolder(), "Embellishment/Embellishment.yml");
         List<IEmbellishmentType> iEmbellishmentTypes = new ArrayList<>();
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
         }
         FileConfiguration saveFile = YamlConfiguration.loadConfiguration(file);
-        for (String key : saveFile.getConfigurationSection("Embellishment").getKeys(false)) {
-            IEmbellishmentType embellishmentType = new EmbellishmentType(key , Material.valueOf(saveFile.getString("Embellishment." + key + ".ITEM"))
-                    , (short) saveFile.getInt("Embellishment." + key + ".Durability"), saveFile.getStringList("Embellishment." + key + ".LORE") , saveFile.getBoolean("Embellishment." + key + ".Teleport"));
-            this.embellishmentTypeManager.register(key , embellishmentType);
-            iEmbellishmentTypes.add(embellishmentType);
-            
+        if (saveFile.getConfigurationSection("Embellishment") == null) {
+            plugin.getLogger().log(Level.WARNING , "Embellishment 인식된 파일이 없어서 가져오기를 종료 합니다.");
+            return null;
         }
+            for (String key : saveFile.getConfigurationSection("Embellishment").getKeys(false)) {
+                IEmbellishmentType embellishmentType = new EmbellishmentType(key, Material.valueOf(saveFile.getString("Embellishment." + key + ".ITEM"))
+                        , (short) saveFile.getInt("Embellishment." + key + ".Durability"), saveFile.getStringList("Embellishment." + key + ".LORE"), saveFile.getBoolean("Embellishment." + key + ".Teleport"));
+                this.embellishmentTypeManager.register(key, embellishmentType);
+                iEmbellishmentTypes.add(embellishmentType);
+
+            }
         return iEmbellishmentTypes;
     }
 

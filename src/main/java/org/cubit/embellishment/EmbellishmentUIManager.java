@@ -31,52 +31,40 @@ public class EmbellishmentUIManager {
         if (!this.playerUiMap.containsKey(player.getUniqueId())) {
             this.playerUiMap.put(player.getUniqueId(), Bukkit.createInventory(null, 54, EmbellishmentCore.suffix + "" + player.getName() + "님의 치장 목록"));
             if (this.embellishmentManager.getPlayerEmbellishmentTypeMap().containsKey(player.getUniqueId())) {
-                this.addItem(player, Material.EMERALD, 49, "치장 적용", Collections.singletonList("§f" + this.embellishmentManager.getPlayerEmbellishmentTypeMap().get(player.getUniqueId()).getName() + " 치장"));
+                this.addItem(player, Material.EMERALD, 49, "치장 적용"
+                        , Collections.singletonList("§f" + this.embellishmentManager.getPlayerEmbellishmentTypeMap().get(player.getUniqueId()).getName() + " 치장") , (short) -1);
             }else {
-                this.addItem(player, Material.EMERALD, 49, "치장 적용", Collections.singletonList("§f적용된 치장이 없습니다."));
+                this.addItem(player, Material.EMERALD, 49, "치장 적용", Collections.singletonList("§f적용된 치장이 없습니다.") , (short) - 1);
             }
         }
         for (String name : this.embellishmentTypeManager.getEmbellishmentType().keySet()) {
             IEmbellishmentType type = this.embellishmentTypeManager.getEmbellishmentType(name);
             if (this.embellishmentManager.getEmbellishment(player.getUniqueId(), name) != null) {
-                this.addItem(player, type.getItem().getType(), type.getName(), type.getLore(), type.getDurability() , false);
+                this.addItem(player, type.getItem().getType(), -1 , type.getName(), type.getLore(), type.getDurability());
                 continue;
             }
-            this.addItem(player, Material.BARRIER, type.getName(), Collections.singletonList("§f미보유 치장 입니다."));
+            this.addItem(player, Material.BARRIER, -1 , type.getName(), Collections.singletonList("§f미보유 치장 입니다.") , (short) -1);
         }
         player.openInventory(this.playerUiMap.get(player.getUniqueId()));
     }
 
-    public void addItem(Player player, Material material, String name, List<String> lore, short durability , boolean b) {
+
+    public void addItem(Player player, Material material , int i, String name, List<String> lore, short durability) {
         ItemStack itemStack = new ItemStack(material);
-        itemStack.setDurability(durability);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("§f" + name);
-        itemMeta.setLore(lore);
-        if(b) {
-            itemMeta.addEnchant(Enchantment.LURE, 1, false);
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        if (!(durability == -1)) {
+            itemStack.setDurability(durability);
         }
-        itemStack.setItemMeta(itemMeta);
-        this.playerUiMap.get(player.getUniqueId()).addItem(itemStack);
-    }
-
-    public void addItem(Player player, Material material, String name, List<String> lore) {
-        ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName("§f" + name);
         itemMeta.setLore(lore);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
+        itemMeta.setUnbreakable(true);
         itemStack.setItemMeta(itemMeta);
-        this.playerUiMap.get(player.getUniqueId()).addItem(itemStack);
-    }
-
-    public void addItem(Player player, Material material, int i , String name, List<String> lore) {
-        ItemStack itemStack = new ItemStack(material);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("§f" + name);
-        itemMeta.setLore(lore);
-        itemStack.setItemMeta(itemMeta);
-        this.playerUiMap.get(player.getUniqueId()).setItem(i , itemStack);
+        if (i == -1) {
+            this.playerUiMap.get(player.getUniqueId()).addItem(itemStack);
+        }else {
+            this.playerUiMap.get(player.getUniqueId()).setItem(i, itemStack);
+        }
     }
 
 }
